@@ -65,18 +65,21 @@ template <typename WordT, typename T>
 inline T
 get_upper_half_value(WordT word, WordT mask, std::uint8_t offset, typename T::value_type * = 0)
 {
+    static_assert(std::is_unsigned<WordT>::value, "Only unsigned word types supported for now.");
     return T{static_cast<typename T::value_type>((word & mask) << offset)};
 }
 
 template <typename WordT, typename T>
 inline WordT set_lower_value(WordT word, WordT mask, std::uint8_t offset, T value)
 {
+    static_assert(std::is_unsigned<WordT>::value, "Only unsigned word types supported for now.");
     return (word & ~mask) | (static_cast<WordT>(value) << offset);
 }
 
 template <typename WordT, typename T>
 inline WordT set_upper_value(WordT word, WordT mask, std::uint8_t offset, T value)
 {
+    static_assert(std::is_unsigned<WordT>::value, "Only unsigned word types supported for now.");
     return (word & ~mask) | (static_cast<WordT>(value) >> offset);
 }
 
