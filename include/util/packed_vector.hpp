@@ -120,7 +120,10 @@ template <typename T, std::size_t Bits, storage::Ownership Ownership> class Pack
         // index to the element of the block
         std::uint8_t element;
 
-        bool operator==(const InternalIndex &other) const { return std::tie(lower_word, element) == std::tie(other.lower_word, other.element); }
+        bool operator==(const InternalIndex &other) const
+        {
+            return std::tie(lower_word, element) == std::tie(other.lower_word, other.element);
+        }
     };
 
   public:
@@ -158,11 +161,17 @@ template <typename T, std::size_t Bits, storage::Ownership Ownership> class Pack
         const InternalIndex internal_index;
     };
 
-    template<typename DataT>
-    class iterator_impl
-        : public boost::iterator_facade<iterator_impl<DataT>, DataT, boost::random_access_traversal_tag, internal_reference>
+    template <typename DataT>
+    class iterator_impl : public boost::iterator_facade<iterator_impl<DataT>,
+                                                        DataT,
+                                                        boost::random_access_traversal_tag,
+                                                        internal_reference>
     {
-        typedef boost::iterator_facade<iterator_impl<DataT>, DataT, boost::random_access_traversal_tag, internal_reference> base_t;
+        typedef boost::iterator_facade<iterator_impl<DataT>,
+                                       DataT,
+                                       boost::random_access_traversal_tag,
+                                       internal_reference>
+            base_t;
 
       public:
         typedef typename base_t::value_type value_type;
@@ -170,7 +179,10 @@ template <typename T, std::size_t Bits, storage::Ownership Ownership> class Pack
         typedef typename base_t::reference reference;
         typedef std::random_access_iterator_tag iterator_category;
 
-        explicit iterator_impl() : container(nullptr), index(std::numeric_limits<std::size_t>::max()) {}
+        explicit iterator_impl()
+            : container(nullptr), index(std::numeric_limits<std::size_t>::max())
+        {
+        }
         explicit iterator_impl(PackedVector *container, const std::size_t index)
             : container(container), index(index)
         {
@@ -180,7 +192,10 @@ template <typename T, std::size_t Bits, storage::Ownership Ownership> class Pack
         void increment() { ++index; }
         void decrement() { --index; }
         void advance(difference_type offset) { index += offset; }
-        bool equal(const iterator_impl &other) const { return container->peek(index) == other.container->peek(other.index); }
+        bool equal(const iterator_impl &other) const
+        {
+            return container->peek(index) == other.container->peek(other.index);
+        }
         reference dereference() const { return (*container)[index]; }
         difference_type distance_to(const iterator_impl &other) const
         {
@@ -225,7 +240,10 @@ template <typename T, std::size_t Bits, storage::Ownership Ownership> class Pack
 
     auto operator[](const std::size_t index) const { return get_value(get_internal_index(index)); }
 
-    auto operator[](const std::size_t index) { return internal_reference{*this, get_internal_index(index)}; }
+    auto operator[](const std::size_t index)
+    {
+        return internal_reference{*this, get_internal_index(index)};
+    }
 
     auto at(std::size_t index) const
     {
