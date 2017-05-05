@@ -145,17 +145,6 @@ template <typename T, std::size_t Bits, storage::Ownership Ownership> class Pack
             return &container == &other.container && internal_index == other.internal_index;
         }
 
-        // I would remove this and use explicit casting if needed
-        // friend bool operator==(const internal_reference &lhs, const value_type rhs)
-        // {
-        //     return static_cast<T>(lhs) == rhs;
-        // }
-
-        // friend bool operator==(const value_type lhs, const internal_reference &rhs)
-        // {
-        //     return lhs == static_cast<T>(rhs);
-        // }
-
         friend std::ostream &operator<<(std::ostream &os, const internal_reference &rhs)
         {
             return os << static_cast<T>(rhs);
@@ -317,7 +306,7 @@ template <typename T, std::size_t Bits, storage::Ownership Ownership> class Pack
 
     inline InternalIndex get_internal_index(const std::size_t index) const
     {
-        const auto block_offset = BLOCK_ELEMENTS * (index / BLOCK_ELEMENTS);
+        const auto block_offset = BLOCK_WORDS * (index / BLOCK_ELEMENTS);
         const std::uint8_t element_index = index % BLOCK_ELEMENTS;
         const auto lower_word_index = block_offset + word_offset[element_index];
 
@@ -357,11 +346,11 @@ template <typename T, std::size_t Bits, storage::Ownership Ownership> class Pack
     void initialize_mask()
     {
         // TODO port to constexptr function
-        const std::uint64_t mask = (1UL << Bits) - 1;
+        const std::uint64_t mask = (1ULL << Bits) - 1;
         auto offset = 0;
         for (auto element_index : util::irange<std::uint8_t>(0, BLOCK_ELEMENTS))
         {
-            auto local_offset = offset % 64;
+            auto local_offset = offset % WORD_BITS;
             lower_mask[element_index] = mask << local_offset;
             lower_offset[element_index] = local_offset;
             // check we sliced off bits
